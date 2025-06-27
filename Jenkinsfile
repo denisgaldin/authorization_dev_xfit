@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     environment {
-        BASE_URL = credentials('xfit_base_url') // Подставь свою переменную Jenkins Credentials
-    }
-
-    tools {
-        python 'Python_3.13' // Убедись, что такой Python есть в Manage Jenkins → Global Tool Config
+        BASE_URL = credentials('xfit_base_url') // Добавь эту переменную в Jenkins > Credentials
     }
 
     stages {
