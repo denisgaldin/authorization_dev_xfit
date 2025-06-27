@@ -1,22 +1,44 @@
-import json
-
 import requests
 from jsonschema import validate
 
-from schemas import post_sendVerifCode
-
 url = "https://dev-mobile.xfit.ru/authorization/sendVerificationCode"
 
-payload = {"phone": {"countryCode": "7", "number": "9009009094"}}
+payload = {
+    "phone": {
+        "countryCode": "7",
+        "number": "9522866866"
+    }
+}
 
-response = requests.request("POST", url, data=payload)
+headers = {
+    "Content-Type": "application/json",
+    "User-Agent": "okhttp/4.9.1",
+    "Platform": "android",
+    "App-Version": "3.12.1"
+}
 
-print(response.text)
+response_schema = {
+    "type": "object",
+    "properties": {
+        "result": {
+            "type": "object",
+            "properties": {
+                "token": {"type": "string"}
+            },
+            "required": ["token"]
+        }
+    },
+    "required": ["result"]
+}
 
 
-def test():
-    response = requests.request("https://dev-mobile.xfit.ru/authorization/sendVerificationCode", url,
-                                data={"phone": {"countryCode": "7", "number": "9009009094"}})
-    assert status_code == 200
-    with open('post_sendVerifCode.json') as file:
-        validate(body, schema=file.read())
+def test_send_verification_code():
+    response = requests.post(url, headers=headers, json=payload)
+
+    print(f"Status Code: {response.status_code}")
+    print(f"Response Body: {response.text}")
+
+    assert response.status_code == 200, f"Expected 200 but got {response.status_code}"
+
+    data = response.json()
+    validate(instance=data, schema=response_schema)
