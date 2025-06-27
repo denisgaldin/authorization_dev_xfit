@@ -1,7 +1,7 @@
-import requests
 import os
-import pytest
 import json
+import pytest
+import requests
 from dotenv import load_dotenv
 from jsonschema import validate, ValidationError
 
@@ -19,14 +19,7 @@ HEADERS = {
 PHONE_PAYLOAD = {
     "phone": {
         "countryCode": "7",
-        "number": "9009009094"
-    }
-}
-
-UNREGISTERED_PHONE_PAYLOAD = {
-    "phone": {
-        "countryCode": "7",
-        "number": "9108009091"
+        "number": "9009009094"  # Зарегистрированный пользователь
     }
 }
 
@@ -71,12 +64,13 @@ def test_send_verification_code_twice():
 
 
 @pytest.mark.order(2)
-def test_authorization_schema_validation(sms_token):
+def test_authorization_schema_validation(known_user_token):
     """Позитивный тест: валидация схемы JSON-ответа /authorization/basic"""
     payload = {
-        "token": sms_token,
-        "verificationCode": "1234"
+        "token": known_user_token,
+        "verificationCode": "1234"  # актуальный код, предварительно введённый
     }
+
     response = requests.post(
         f"{BASE_URL}/authorization/basic",
         headers=HEADERS,
@@ -95,23 +89,9 @@ def test_authorization_schema_validation(sms_token):
         pytest.fail(f"Ответ не соответствует JSON-схеме: {e.message}")
 
 
-@pytest.fixture
-def unregistered_sms_token():
-    response = requests.post(
-        f"{BASE_URL}/authorization/sendVerificationCode",
-        headers=HEADERS,
-        json=UNREGISTERED_PHONE_PAYLOAD
-    )
-    if response.status_code != 200:
-        pytest.skip(
-            f"❌ Не удалось получить SMS токен (неизвестный пользователь). Статус: {response.status_code}, тело: {response.text}")
-
-    return response.json().get("result", {}).get("token")
-
-
 @pytest.mark.order(3)
 def test_authorize_user_not_found(unregistered_sms_token):
-    """Негативный тест: пользователь не найден"""
+    """Негативный тест: пользователь не найден (незарегистрированный номер)"""
     payload = {
         "token": unregistered_sms_token,
         "verificationCode": "1234"
@@ -123,3 +103,26 @@ def test_authorize_user_not_found(unregistered_sms_token):
     )
     assert response.status_code == 404, f"Ожидали 404, получили {response.status_code}"
     check_user_not_found(response.json())
+
+
+@pytest.mark.order(4)
+def test_authorize_with_invalid_code(known_user_token):
+    """Негативный тест: неверный код подтверждения"""
+    payload = {
+        "token": known_user_token,
+        "verificationCode": "0000"  # гарантированно неверный
+    }
+
+    response = requests.post(
+        f"{BASE_URL}/authorization/basic",
+        headers=HEADERS,
+        json=payload
+    )
+
+    assert response.status_code == 403, f"Ожидали 403, получили {response.status_code}"
+
+    data = response.json()
+    assert "error" in data, "Ожидалось поле 'error'"
+    assert data["error"]["type"] == "VERIFICATION_CODE_FAILED", "Ожидали тип ошибки VERIFICATION_CODE_FAILED"
+    assert isinstance(data["error"]["message"], str)
+    assert isinstance(data["error"]["debugMessage"], str)
