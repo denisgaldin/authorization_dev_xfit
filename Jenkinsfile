@@ -2,11 +2,10 @@ pipeline {
     agent any
 
     environment {
-        BASE_URL = credentials('xfit_base_url') // добавь это как Secret Text в Jenkins credentials
+        BASE_URL = credentials('xfit_base_url') // переменная через Jenkins Credentials
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo '🔄 Получаем код из репозитория'
@@ -14,39 +13,25 @@ pipeline {
             }
         }
 
-        stage('Setup Python Environment') {
+        stage('Install & Run') {
             steps {
-                echo '🐍 Установка зависимостей'
+                echo '🐍 Установка зависимостей и запуск тестов'
                 sh '''
                     python3 -m venv .venv
-                    . .venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                echo '🚀 Запуск автотестов'
-                sh '''
-                    . .venv/bin/activate
-                    pytest --maxfail=1 --disable-warnings -v
+                    .venv/bin/pip install --upgrade pip
+                    .venv/bin/pip install -r requirements.txt
+                    .venv/bin/python -m pytest --maxfail=1 --disable-warnings -v
                 '''
             }
         }
     }
 
     post {
-        always {
-            echo '🧹 Очистка окружения'
-            sh 'rm -rf .venv'
+        success {
+            echo '✅ Все тесты прошли успешно!'
         }
         failure {
             echo '❌ Ошибка: Проверить тесты и окружение'
-        }
-        success {
-            echo '✅ Все тесты прошли успешно!'
         }
     }
 }
