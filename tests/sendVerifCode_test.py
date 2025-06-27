@@ -6,9 +6,9 @@ import json
 
 load_dotenv()
 
-base_url = os.getenv("BASE_URL")
+BASE_URL = os.getenv("BASE_URL")
 
-url = f"{base_url}/authorization/sendVerificationCode"
+url = f"{BASE_URL}/authorization/sendVerificationCode"
 
 payload = {
     "phone": {
@@ -35,7 +35,7 @@ def test_send_verification_code():
     print(f"Status Code: {response.status_code}")
     print(f"Response Body: {response.text}")
 
-    assert response.status_code == 200, f"Ожидали 200, но получили {response.status_code}"
+    assert response.status_code == 200, f"Получаем 200, статус код {response.status_code}"
 
     try:
         data = response.json()
