@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        BASE_URL = 'https://dev-mobile.xfit.ru'  // или из Jenkins credentials
-        VENV_DIR = '.venv'
+        BASE_URL = credentials('xfit_base_url') // добавь это как Secret Text в Jenkins credentials
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo '🔄 Получаем код из репозитория'
@@ -18,8 +18,8 @@ pipeline {
             steps {
                 echo '🐍 Установка зависимостей'
                 sh '''
-                    python3 -m venv $VENV_DIR
-                    source $VENV_DIR/bin/activate
+                    python3 -m venv .venv
+                    . .venv/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
@@ -28,25 +28,25 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                echo '🚀 Запуск pytest'
+                echo '🚀 Запуск автотестов'
                 sh '''
-                    source $VENV_DIR/bin/activate
-                    pytest tests/ --disable-warnings -v
+                    . .venv/bin/activate
+                    pytest --maxfail=1 --disable-warnings -v
                 '''
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Успешно: Все тесты прошли'
+        always {
+            echo '🧹 Очистка окружения'
+            sh 'rm -rf .venv'
         }
         failure {
             echo '❌ Ошибка: Проверить тесты и окружение'
         }
-        always {
-            echo '🧹 Очистка окружения'
-            sh 'rm -rf $VENV_DIR'
+        success {
+            echo '✅ Все тесты прошли успешно!'
         }
     }
 }
