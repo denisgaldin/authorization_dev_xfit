@@ -3,19 +3,20 @@ from jsonschema import validate, ValidationError
 from dotenv import load_dotenv
 import os
 import json
+import random
 
 load_dotenv()
-
 BASE_URL = os.getenv("BASE_URL")
 
-url = f"{BASE_URL}/authorization/sendVerificationCode"
 
-payload = {
-    "phone": {
+def generate_unique_phone():
+    return {
         "countryCode": "7",
-        "number": "9009009094"
+        "number": f"900{random.randint(1000000, 9999999)}"
     }
-}
+
+
+url = f"{BASE_URL}/authorization/sendVerificationCode"
 
 headers = {
     "Content-Type": "application/json",
@@ -30,15 +31,20 @@ with open(schema_path, encoding="utf-8") as f:
 
 
 def test_send_verification_code():
+    payload = {"phone": generate_unique_phone()}
+
     response = requests.post(url, headers=headers, json=payload)
 
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Body: {response.text}")
+    print(f"📡 Status Code: {response.status_code}")
+    print(f"📨 Response Body: {response.text}")
 
-    assert response.status_code == 200, f"Получаем 200, статус код {response.status_code}"
+    assert response.status_code == 200, f"❌ Ожидали 200, получили {response.status_code}"
 
     try:
         data = response.json()
         validate(instance=data, schema=response_schema)
+        print("✅ Ответ соответствует JSON-схеме")
     except ValidationError as e:
-        raise AssertionError(f"Ответ не соответствует схеме — нет токена: {e.message}")
+        raise AssertionError(f"❌ Ответ не соответствует схеме: {e.message}")
+    except json.JSONDecodeError:
+        raise AssertionError("❌ Ответ не является валидным JSON")
