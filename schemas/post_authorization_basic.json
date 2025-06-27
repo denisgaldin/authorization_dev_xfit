@@ -2,15 +2,282 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "token": {
-      "type": "string"
-    },
-    "verificationCode": {
-      "type": "string"
+    "result": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "object",
+          "properties": {
+            "guid": {
+              "type": "string"
+            },
+            "userGuid": {
+              "type": "string"
+            },
+            "clientGuid": {
+              "type": "string"
+            },
+            "isRegistered": {
+              "type": "boolean"
+            },
+            "phone": {
+              "type": "object",
+              "properties": {
+                "countryCode": {
+                  "type": "string"
+                },
+                "number": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "countryCode",
+                "number"
+              ]
+            },
+            "email": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "patronymic": {
+              "type": "null"
+            },
+            "surname": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "birthDate": {
+              "type": "string"
+            },
+            "photoUrl": {
+              "type": "null"
+            },
+            "isVerified": {
+              "type": "boolean"
+            },
+            "passData": {
+              "type": "object",
+              "properties": {
+                "series": {
+                  "type": "null"
+                },
+                "number": {
+                  "type": "null"
+                },
+                "dateOfIssue": {
+                  "type": "null"
+                },
+                "departmentCode": {
+                  "type": "null"
+                },
+                "address": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "series",
+                "number",
+                "dateOfIssue",
+                "departmentCode",
+                "address"
+              ]
+            },
+            "clubMemberships": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "clubGuid": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "clubGuid"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "guid",
+            "userGuid",
+            "clientGuid",
+            "isRegistered",
+            "phone",
+            "email",
+            "name",
+            "patronymic",
+            "surname",
+            "gender",
+            "birthDate",
+            "photoUrl",
+            "isVerified",
+            "passData",
+            "clubMemberships"
+          ]
+        },
+        "clientList": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "guid": {
+                  "type": "string"
+                },
+                "userGuid": {
+                  "type": "string"
+                },
+                "clientGuid": {
+                  "type": "string"
+                },
+                "isRegistered": {
+                  "type": "boolean"
+                },
+                "phone": {
+                  "type": "object",
+                  "properties": {
+                    "countryCode": {
+                      "type": "string"
+                    },
+                    "number": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "countryCode",
+                    "number"
+                  ]
+                },
+                "email": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "patronymic": {
+                  "type": "null"
+                },
+                "surname": {
+                  "type": "string"
+                },
+                "gender": {
+                  "type": "string"
+                },
+                "birthDate": {
+                  "type": "string"
+                },
+                "photoUrl": {
+                  "type": "null"
+                },
+                "isVerified": {
+                  "type": "boolean"
+                },
+                "passData": {
+                  "type": "object",
+                  "properties": {
+                    "series": {
+                      "type": "null"
+                    },
+                    "number": {
+                      "type": "null"
+                    },
+                    "dateOfIssue": {
+                      "type": "null"
+                    },
+                    "departmentCode": {
+                      "type": "null"
+                    },
+                    "address": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "series",
+                    "number",
+                    "dateOfIssue",
+                    "departmentCode",
+                    "address"
+                  ]
+                },
+                "clubMemberships": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string"
+                        },
+                        "clubGuid": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "clubGuid"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "guid",
+                "userGuid",
+                "clientGuid",
+                "isRegistered",
+                "phone",
+                "email",
+                "name",
+                "patronymic",
+                "surname",
+                "gender",
+                "birthDate",
+                "photoUrl",
+                "isVerified",
+                "passData",
+                "clubMemberships"
+              ]
+            }
+          ]
+        },
+        "access": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "type": "string"
+            },
+            "expire": {
+              "type": "string"
+            },
+            "refresh": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "token",
+            "expire",
+            "refresh"
+          ]
+        }
+      },
+      "required": [
+        "user",
+        "clientList",
+        "access"
+      ]
     }
   },
   "required": [
-    "token",
-    "verificationCode"
+    "result"
   ]
 }
