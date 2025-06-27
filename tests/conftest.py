@@ -1,4 +1,3 @@
-# conftest.py
 import pytest
 import requests
 import os
