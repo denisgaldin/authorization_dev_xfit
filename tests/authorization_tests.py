@@ -1,12 +1,19 @@
 import requests
 from jsonschema import validate
+from dotenv import load_dotenv
+import os
 
-url = "https://dev-mobile.xfit.ru/authorization/sendVerificationCode"
+load_dotenv()
+
+# Получаем базовый URL из .env
+base_url = os.getenv("BASE_URL")
+
+url = f"{base_url}/authorization/sendVerificationCode"
 
 payload = {
     "phone": {
         "countryCode": "7",
-        "number": "9522866866"
+        "number": "9009009094"
     }
 }
 
