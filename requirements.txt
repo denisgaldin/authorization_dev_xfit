@@ -3,3 +3,4 @@ requests==2.32.4
 jsonschema==4.24.0
 python-dotenv
 allure-pytest==2.14.3
+pytest-order
