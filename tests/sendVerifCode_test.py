@@ -40,6 +40,7 @@ def test_send_verification_code():
 
     assert response.status_code == 200, f"❌ Ожидали 200, получили {response.status_code}"
 
+    # Проверка соответствия JSON-схеме
     try:
         data = response.json()
         validate(instance=data, schema=response_schema)
